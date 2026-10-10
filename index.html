@@ -1,0 +1,185 @@
+<!doctype html>
+<!--
+  Currículo Online — SEMDET / Prefeitura Municipal de Lauro de Freitas.
+
+  Esta página não é o sistema: ela só abre o sistema em tela cheia. O Currículo
+  Online continua rodando no Google Apps Script, exatamente como hoje, e nada
+  nele precisou mudar para isso funcionar.
+
+  POR QUE ELA EXISTE
+  Aberto direto pelo link do Google, o sistema aparece com uma tarja clara no
+  topo — "Este aplicativo foi criado por um usuário do Google Apps Script",
+  com "Denunciar abuso" —, que ocupa 77 px e faz um serviço da prefeitura
+  parecer improvisado. O Google NÃO envia essa tarja quando a página está
+  embutida em outro site. Foi medido, não suposto.
+
+  Além disso, o cidadão passa a receber um endereço da prefeitura em vez de um
+  link de 120 caracteres em script.google.com, que parece golpe.
+
+  O ÚNICO LUGAR PARA MEXER
+  É o endereço no atributo src do <iframe>, lá embaixo. Ele muda apenas se
+  alguém criar uma IMPLANTAÇÃO nova no Apps Script (publicar uma versão nova
+  não muda nada). O link que você divulga para os candidatos passa a ser o
+  desta página, e nunca mais precisa ser trocado.
+
+  Veja o README.md ao lado para publicar e para conferir.
+-->
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+<title>Currículo Online — Prefeitura de Lauro de Freitas</title>
+<meta name="description" content="Cadastre seu currículo e participe dos encaminhamentos para as oportunidades de emprego do município de Lauro de Freitas.">
+<meta name="theme-color" content="#0100C0">
+
+<link rel="icon" href="icone.png" type="image/png">
+<link rel="apple-touch-icon" href="icone.png">
+
+<!--
+  Como o link aparece quando alguém manda no WhatsApp ou no Facebook.
+  Quando o endereço definitivo estiver no ar, troque o og:image pelo endereço
+  completo da imagem (ex.: https://seu-endereco/compartilhar.png): alguns
+  aplicativos de mensagem só aceitam caminho completo.
+-->
+<meta property="og:type" content="website">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:site_name" content="Prefeitura Municipal de Lauro de Freitas">
+<meta property="og:title" content="Currículo Online — Prefeitura de Lauro de Freitas">
+<meta property="og:description" content="Cadastre seu currículo e participe dos encaminhamentos para as oportunidades de emprego do município.">
+<meta property="og:image" content="compartilhar.png">
+<meta name="twitter:card" content="summary_large_image">
+
+<style>
+  :root { --azul: #0100C0; }
+
+  /*
+    A página não rola: quem rola é o sistema, dentro do quadro. Sem isto o
+    celular ganharia duas barras de rolagem, uma dentro da outra.
+  */
+  html, body {
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    background: var(--azul);
+  }
+
+  /*
+    No celular a barra de endereço aparece e some, e a altura da janela muda
+    junto. O dvh acompanha esse movimento; o 100% acima fica de reserva para
+    navegador antigo que não conheça a unidade.
+  */
+  @supports (height: 100dvh) {
+    html, body { height: 100dvh; }
+  }
+
+  #sistema {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+
+  /* Recado enquanto o sistema não abre — e, se demorar demais, uma saída. */
+  #abrindo {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 22px;
+    padding: 24px;
+    text-align: center;
+    background: var(--azul);
+    color: #fff;
+    font-family: "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+  }
+  .pronto #abrindo { display: none; }
+
+  #abrindo img { width: 72px; height: 72px; }
+  #abrindo p { margin: 0; font-size: 16px; line-height: 1.5; max-width: 30em; }
+
+  .roda {
+    width: 34px;
+    height: 34px;
+    border: 3px solid rgba(255, 255, 255, .35);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: girar 1s linear infinite;
+  }
+  @keyframes girar { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .roda { animation-duration: 3s; } }
+
+  .demora { display: none; }
+  .demorou .demora { display: block; }
+  .demorou .carregando { display: none; }
+
+  .demora a {
+    display: inline-block;
+    margin-top: 16px;
+    padding: 13px 26px;
+    border-radius: 10px;
+    background: #fff;
+    color: var(--azul);
+    font-weight: 700;
+    text-decoration: none;
+  }
+</style>
+
+<script>
+  /*
+    Declarada aqui, antes do quadro, de propósito: o onload do <iframe> pode
+    disparar antes de um script no fim da página ter rodado, e o recado ficaria
+    preso na tela por cima do sistema.
+  */
+  var tempoLimite;
+  function sistemaAbriu() {
+    clearTimeout(tempoLimite);
+    document.documentElement.classList.add('pronto');
+  }
+</script>
+
+<!-- Sem JavaScript o recado não teria como sair da frente; então nem aparece. -->
+<noscript><style>#abrindo { display: none; }</style></noscript>
+</head>
+
+<body>
+
+<iframe id="sistema"
+        title="Currículo Online da Prefeitura Municipal de Lauro de Freitas"
+        src="https://script.google.com/macros/s/AKfycbxgPUd11SOF51j1f0B3T_696v5f21RAo9bT88tbJwTe5rYbX-cOV9B1kAKKDlWaA8an/exec"
+        allow="clipboard-write"
+        onload="sistemaAbriu()"></iframe>
+
+<div id="abrindo">
+  <img src="icone.png" alt="" width="72" height="72">
+
+  <div class="carregando">
+    <div class="roda" role="status" aria-label="Abrindo"></div>
+    <p>Abrindo o Currículo Online…</p>
+  </div>
+
+  <div class="demora">
+    <p>
+      O sistema está demorando para abrir.<br>
+      Confira se este aparelho está conectado à internet e tente de novo.
+    </p>
+    <a id="direto" href="#" rel="noopener">Abrir o sistema</a>
+  </div>
+</div>
+
+<script>
+  /*
+    O endereço fica escrito uma vez só, no src do quadro. O link de emergência
+    é montado a partir dele, para nunca ficarem diferentes um do outro.
+  */
+  document.getElementById('direto').href = document.getElementById('sistema').src;
+
+  tempoLimite = setTimeout(function () {
+    document.documentElement.classList.add('demorou');
+  }, 20000);
+</script>
+
+</body>
+</html>
